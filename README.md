@@ -1,9 +1,29 @@
 # Elixir/Phoenix on Alpine Linux
 
+## Prior Work
+
+[bitwalker]: https://github.com/bitwalker/
+
+This project is based entirely on the following projects from [bitwalker][bitwalker].
+
+- alpine-erlang
+- alpine-elixir
+- alpine-elixir-phoenix
+
+It combines these three repositories (images) into a single one. Also, it
+builds for the `linux/amd64,linux/arm/v7` platforms. Building for
+`linux/arm/v7` was the main motivation for the fork.
+
+The description below is taken (and slightly modified) from the original
+`alpine-elixir-phoenix` repo.
+
+## Overview
+
 This Dockerfile provides everything you need to run your Phoenix application in Docker out of the box.
 
-It is based on my `alpine-erlang` image, and installs Elixir (1.11.0), Node.js (12.18.x), Hex and Rebar. It can handle compiling
-your Node and Elixir dependencies as part of it's build.
+It is based on Alpine 3.14.0, installs Erlang 24.0.3, Elixir 1.12.2, nodejs and
+yarn from Alpine, Hex and Rebar. It can handle compiling your Node and Elixir
+dependencies as part of it's build.
 
 ## Usage
 
@@ -15,17 +35,17 @@ It is highly recommended that you add a `USER default` instruction to the end of
 To boot straight to a prompt in the image:
 
 ```
-$ docker run --rm -it --user=1000001 bitwalker/alpine-elixir-phoenix iex
-Erlang/OTP 23 [erts-11.1.1] [source] [64-bit] [smp:3:3] [ds:3:3:10] [async-threads:1]
+$ docker run --rm -it --user=1000001 ghcr.io/eglimi/alpine-elixir-phoenix iex
+Erlang/OTP 24 [erts-12.0.3] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [jit:no-native-stack]
 
-Interactive Elixir (1.11.0) - press Ctrl+C to exit (type h() ENTER for help)
+Interactive Elixir (1.12.2) - press Ctrl+C to exit (type h() ENTER for help)
 iex(1)>
 ```
 
 Extending for your own application:
 
 ```dockerfile
-FROM bitwalker/alpine-elixir-phoenix:latest
+FROM ghcr.io/eglimi/alpine-elixir-phoenix:latest
 
 # Set exposed ports
 EXPOSE 5000
@@ -38,13 +58,13 @@ RUN mix do deps.get, deps.compile
 # Same with npm deps
 ADD assets/package.json assets/
 RUN cd assets && \
-    npm install
+    yarn install
 
 ADD . .
 
 # Run frontend build, compile, and digest assets
 RUN cd assets/ && \
-    npm run deploy && \
+    yarn run deploy && \
     cd - && \
     mix do compile, phx.digest
 
@@ -71,10 +91,12 @@ You can also leverage [docker multistage build](https://docs.docker.com/develop/
 An example is shown below:
 
 ```dockerfile
-FROM bitwalker/alpine-elixir-phoenix:latest AS phx-builder
+FROM ghcr.io/eglimi/alpine-elixir-phoenix:latest AS phx-builder
 
-# Set exposed ports
-ENV MIX_ENV=prod
+WORKDIR /tmp/build
+
+ENV NODE_ENV=production \
+    MIX_ENV=prod \
 
 # Cache elixir deps
 ADD mix.exs mix.lock ./
@@ -83,36 +105,35 @@ RUN mix do deps.get, deps.compile
 # Same with npm deps
 ADD assets/package.json assets/
 RUN cd assets && \
-    npm install
+    yarn install
 
 ADD . .
 
 # Run frontend build, compile, and digest assets
 RUN cd assets/ && \
-    npm run deploy && \
+    yarn run deploy && \
     cd - && \
-    mix do compile, phx.digest
+    mix do compile, phx.digest, release --overwrite
 
-FROM bitwalker/alpine-elixir:latest
+# Final image
+FROM alpine:3.14.0
 
-EXPOSE 5000
-ENV PORT=5000 MIX_ENV=prod
+# Installing some tools for debugging in a production environment
+RUN \
+    apk --no-cache --update-cache --available upgrade \
+    && apk add --no-cache --update-cache \
+	bash curl libstdc++ ca-certificates ncurses openssl pcre unixodbc zlib netcat-openbsd bind-tools \
+    && update-ca-certificates --fresh
 
-COPY --from=phx-builder /opt/app/_build /opt/app/_build
-COPY --from=phx-builder /opt/app/priv /opt/app/priv
-COPY --from=phx-builder /opt/app/config /opt/app/config
-COPY --from=phx-builder /opt/app/lib /opt/app/lib
-COPY --from=phx-builder /opt/app/deps /opt/app/deps
-COPY --from=phx-builder /opt/app/.mix /opt/app/.mix
-COPY --from=phx-builder /opt/app/mix.* /opt/app/
+ENV LANG=C.UTF-8
 
-# alternatively you can just copy the whole dir over with:
-# COPY --from=phx-builder /opt/app /opt/app
-# be warned, this will however copy over non-build files
+WORKDIR /opt/app
+
+COPY --from=phx-builder /tmp/build/_build/prod/rel .
 
 USER default
 
-CMD ["mix", "phx.server"]
+CMD ["./my_app/bin/my_app", "start"]
 ```
 
 ## License
