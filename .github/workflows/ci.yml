@@ -1,25 +1,19 @@
 name: Build/Publish Image
 
-on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'Makefile'
-      - 'Dockerfile'
-      - 'VERSION'
-  pull_request:
-    paths:
-      - 'Makefile'
-      - 'Dockerfile'
-      - 'VERSION'
+on: workflow_dispatch
 
 env:
   BUILDX_CACHE_DIR: /tmp/buildx
+  REGISTRY: ghcr.io
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      packages: write
+    
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -47,19 +41,14 @@ jobs:
           buildx-elixir
 
     - name: Build Image
-      env:
-        VERSION: ${{ steps.versions.outputs.elixir_version }}
       run: make build
 
     - name: Login
-      if: ${{ github.event_name == 'push' }}
       uses: docker/login-action@v1
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Publish Image
-      if: ${{ github.event_name == 'push' }}
-      env:
-        VERSION: ${{ steps.versions.outputs.elixir_version }}
       run: make release
