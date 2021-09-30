@@ -21,9 +21,9 @@ The description below is taken (and slightly modified) from the original
 
 This Dockerfile provides everything you need to run your Phoenix application in Docker out of the box.
 
-It is based on Alpine 3.14.0, installs Erlang 24.0.3, Elixir 1.12.2, nodejs and
-yarn from Alpine, Hex and Rebar. It can handle compiling your Node and Elixir
-dependencies as part of it's build.
+See the VERSION file to check the current versions of Alpine, Erlang and
+Elixir. Nodejs and yarn from Alpine, Hex and Rebar. It can handle compiling
+your Node and Elixir dependencies as part of it's build.
 
 ## Usage
 
