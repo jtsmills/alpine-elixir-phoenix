@@ -4,13 +4,13 @@ ARG ALPINE_MIN_VERSION
 ARG ERLANG_VERSION
 ARG ELIXIR_VERSION
 
-MAINTAINER Michael Egli <eglimi@gmail.com>
+MAINTAINER Justin Mills <me@jtsmills.com>
 
 # Important!  Update this no-op ENV variable when this Dockerfile
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2021-09-30 \
+ENV REFRESHED_AT=2021-12-01 \
     LANG=C.UTF-8 \
     HOME=/opt/app/ \
     TERM=xterm \
@@ -109,7 +109,7 @@ ARG ALPINE_VERSION
 FROM alpine:${ALPINE_VERSION}
 ARG ALPINE_MIN_VERSION
 
-MAINTAINER Michael Egli <eglimi@gmail.com>
+MAINTAINER Justin Mills <me@jtsmills.com>
 
 ENV LANG=C.UTF-8 \
     HOME=/opt/app/ \

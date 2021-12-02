@@ -3,27 +3,18 @@
 ## Prior Work
 
 [bitwalker]: https://github.com/bitwalker/
+[eglimi]: https://github.com/eglimi/alpine-elixir-phoenix
 
-This project is based entirely on the following projects from [bitwalker][bitwalker].
+This project is based on [alpine-elixir-phoenix](https://github.com/eglimi/alpine-elixir-phoenix) from [eglimi][eglimi] based on work by [bitwalker][bitwalker].
 
-- alpine-erlang
-- alpine-elixir
-- alpine-elixir-phoenix
-
-It combines these three repositories (images) into a single one. Also, it
-builds for the `linux/amd64,linux/arm/v7` platforms. Building for
-`linux/arm/v7` was the main motivation for the fork.
-
-The description below is taken (and slightly modified) from the original
-`alpine-elixir-phoenix` repo.
+The description below is taken (and slightly modified) from the original `alpine-elixir-phoenix` repo.
 
 ## Overview
 
 This Dockerfile provides everything you need to run your Phoenix application in Docker out of the box.
 
-See the VERSION file to check the current versions of Alpine, Erlang and
-Elixir. Nodejs and yarn from Alpine, Hex and Rebar. It can handle compiling
-your Node and Elixir dependencies as part of it's build.
+See the VERSION file to check the current versions of Alpine, Erlang, Elixir, and Node. Nodejs and yarn
+from Alpine, Hex and Rebar. It can handle compiling your Node and Elixir dependencies as part of it's build.
 
 ## Usage
 
@@ -35,7 +26,7 @@ It is highly recommended that you add a `USER default` instruction to the end of
 To boot straight to a prompt in the image:
 
 ```
-$ docker run --rm -it --user=1000001 ghcr.io/eglimi/alpine-elixir-phoenix iex
+$ docker run --rm -it --user=1000001 jtsmills/alpine-elixir-phoenix iex
 Erlang/OTP 24 [erts-12.0.3] [source] [64-bit] [smp:8:8] [ds:8:8:10] [async-threads:1] [jit:no-native-stack]
 
 Interactive Elixir (1.12.2) - press Ctrl+C to exit (type h() ENTER for help)
@@ -45,7 +36,7 @@ iex(1)>
 Extending for your own application:
 
 ```dockerfile
-FROM ghcr.io/eglimi/alpine-elixir-phoenix:latest
+FROM jtsmills/alpine-elixir-phoenix:latest
 
 # Set exposed ports
 EXPOSE 5000
@@ -91,7 +82,7 @@ You can also leverage [docker multistage build](https://docs.docker.com/develop/
 An example is shown below:
 
 ```dockerfile
-FROM ghcr.io/eglimi/alpine-elixir-phoenix:latest AS phx-builder
+FROM jtsmills/alpine-elixir-phoenix:latest AS phx-builder
 
 WORKDIR /tmp/build
 

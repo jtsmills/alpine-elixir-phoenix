@@ -4,16 +4,10 @@ on: workflow_dispatch
 
 env:
   BUILDX_CACHE_DIR: /tmp/buildx
-  REGISTRY: ghcr.io
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: read
-      packages: write
-    
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -41,14 +35,15 @@ jobs:
           buildx-elixir
 
     - name: Build Image
+      env:
+        VERSION: ${{ steps.versions.outputs.elixir_version }}
       run: make build
 
     - name: Login
       uses: docker/login-action@v1
       with:
-        registry: ${{ env.REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
     - name: Publish Image
       run: make release
