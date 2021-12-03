@@ -10,7 +10,7 @@ MAINTAINER Justin Mills <me@jtsmills.com>
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2021-12-01 \
+ENV REFRESHED_AT=2021-12-02 \
     LANG=C.UTF-8 \
     HOME=/opt/app/ \
     TERM=xterm \
@@ -129,7 +129,7 @@ RUN \
     && echo "@edge http://dl-cdn.alpinelinux.org/alpine/edge/main" >> /etc/apk/repositories \
     && apk --no-cache --update-cache --available upgrade \
     && apk add --no-cache --update-cache \
-	bash libstdc++ ca-certificates ncurses openssl pcre unixodbc zlib make g++ wget curl inotify-tools nodejs npm yarn \
+	bash libstdc++ ca-certificates ncurses openssl pcre unixodbc zlib make g++ wget curl inotify-tools git nodejs npm yarn \
     && update-ca-certificates --fresh
 
 # Add local node module binaries to PATH
