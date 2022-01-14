@@ -107,7 +107,7 @@ RUN cd assets/ && \
     mix do compile, phx.digest, release --overwrite
 
 # Final image
-FROM alpine:3.14.0
+FROM alpine:3.15.0
 
 # Installing some tools for debugging in a production environment
 RUN \
