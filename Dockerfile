@@ -108,6 +108,7 @@ RUN \
 ARG ALPINE_VERSION
 FROM alpine:${ALPINE_VERSION}
 ARG ALPINE_MIN_VERSION
+ARG NODE_VERSION
 
 MAINTAINER Justin Mills <me@jtsmills.com>
 
@@ -120,6 +121,13 @@ ENV LANG=C.UTF-8 \
 COPY --from=build /tmp/usr/local /usr/local
 
 WORKDIR ${HOME}
+
+RUN wget https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-musl.tar.gz
+RUN tar -xvf node-v${NODE_VERSION}-linux-x64-musl.tar.gz
+RUN rm node-v${NODE_VERSION}-linux-x64-musl.tar.gz
+
+RUN ln -s /var/www/node-v${NODE_VERSION}-linux-x64-musl/bin/node /usr/bin/node
+RUN ln -s /var/www/node-v${NODE_VERSION}-linux-x64-musl/bin/npm /usr/bin/npm
 
 RUN \
     adduser -s /bin/sh -u 1001 -G root -h "${HOME}" -S -D default \

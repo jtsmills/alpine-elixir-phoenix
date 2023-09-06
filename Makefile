@@ -4,7 +4,8 @@ ALPINE_VERSION ?= `cat VERSION | grep alpine | cut -d' ' -f2`
 ALPINE_MIN_VERSION := $(shell echo $(ALPINE_VERSION) | sed 's/\([0-9][0-9]*\)\.\([0-9][0-9]*\)\(\.[0-9][0-9]*\)*/\1.\2/')
 ERLANG_VERSION ?= `cat VERSION | grep erlang | cut -d' ' -f2`
 ELIXIR_VERSION ?= `cat VERSION | grep elixir | cut -d' ' -f2`
-VERSION := $(ERLANG_VERSION)-$(ELIXIR_VERSION)
+NODE_VERSION ?= `cat VERSION | grep node | cut -d' ' -f2`
+VERSION := $(ERLANG_VERSION)-$(ELIXIR_VERSION)-$(NODE_VERSION)
 IMAGE_NAME ?= jtsmills/alpine-elixir-phoenix
 XDG_CACHE_HOME ?= /tmp
 BUILDX_CACHE_DIR ?= $(XDG_CACHE_HOME)/buildx
@@ -35,6 +36,7 @@ build: setup-buildx ## Build the Docker image
 		--build-arg ALPINE_MIN_VERSION=$(ALPINE_MIN_VERSION) \
 		--build-arg ERLANG_VERSION=$(ERLANG_VERSION) \
 		--build-arg ELIXIR_VERSION=$(ELIXIR_VERSION) \
+		--build-arg NODE_VERSION=$(NODE_VERSION) \
 		--platform linux/amd64 \
 		--cache-from "type=local,src=$(BUILDX_CACHE_DIR)" \
 		--cache-to "type=local,dest=$(BUILDX_CACHE_DIR)" \
@@ -52,6 +54,7 @@ release: setup-buildx ## Build and release the Docker image to Docker Hub
 		--build-arg ALPINE_MIN_VERSION=$(ALPINE_MIN_VERSION) \
 		--build-arg ERLANG_VERSION=$(ERLANG_VERSION) \
 		--build-arg ELIXIR_VERSION=$(ELIXIR_VERSION) \
+		--build-arg NODE_VERSION=$(NODE_VERSION) \
 		--platform linux/amd64 \
 		--cache-from "type=local,src=$(BUILDX_CACHE_DIR)" \
 		--cache-to "type=local,dest=$(BUILDX_CACHE_DIR)" \
