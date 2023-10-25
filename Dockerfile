@@ -10,7 +10,7 @@ MAINTAINER Justin Mills <me@jtsmills.com>
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2023-09-05 \
+ENV REFRESHED_AT=2023-10-24 \
     LANG=C.UTF-8 \
     HOME=/opt/app/ \
     TERM=xterm \
@@ -120,14 +120,17 @@ ENV LANG=C.UTF-8 \
 # Copy Erlang/OTP installation
 COPY --from=build /tmp/usr/local /usr/local
 
-WORKDIR ${HOME}
+WORKDIR /opt
 
 RUN wget https://unofficial-builds.nodejs.org/download/release/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-x64-musl.tar.gz
-RUN tar -xvf node-v${NODE_VERSION}-linux-x64-musl.tar.gz
+RUN mkdir -p /opt/nodejs
+RUN tar -zxvf node-v${NODE_VERSION}-linux-x64-musl.tar.gz --directory /opt/nodejs --strip-components=1
 RUN rm node-v${NODE_VERSION}-linux-x64-musl.tar.gz
 
-RUN ln -s /var/www/node-v${NODE_VERSION}-linux-x64-musl/bin/node /usr/bin/node
-RUN ln -s /var/www/node-v${NODE_VERSION}-linux-x64-musl/bin/npm /usr/bin/npm
+RUN ln -s /opt/nodejs/bin/node /usr/local/bin/node
+RUN ln -s /opt/nodejs/bin/npm /usr/local/bin/npm
+
+WORKDIR ${HOME}
 
 RUN \
     adduser -s /bin/sh -u 1001 -G root -h "${HOME}" -S -D default \
