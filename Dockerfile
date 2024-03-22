@@ -10,7 +10,7 @@ MAINTAINER Justin Mills <me@jtsmills.com>
 # is updated with the current date. It will force refresh of all
 # of the base images and things like `apt-get update` won't be using
 # old cached versions when the Dockerfile is built.
-ENV REFRESHED_AT=2023-10-24 \
+ENV REFRESHED_AT=2024-03-22 \
     LANG=C.UTF-8 \
     HOME=/opt/app/ \
     TERM=xterm \
