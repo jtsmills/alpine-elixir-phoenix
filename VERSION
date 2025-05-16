@@ -1,4 +1,4 @@
 elixir: 1.18.3
-erlang: 27.3
+erlang: 27.3.4
 alpine 3.21.3
-node 23.9.0
+node 24.0.2
